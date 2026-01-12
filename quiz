@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz su Pietro Perugino</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        #root {
+            width: 100%;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function PeruginoQuiz() {
+          const [currentQuestion, setCurrentQuestion] = useState(0);
+          const [score, setScore] = useState(0);
+          const [showResult, setShowResult] = useState(false);
+          const [selectedAnswer, setSelectedAnswer] = useState(null);
+          const [quizCompleted, setQuizCompleted] = useState(false);
+          const [answeredQuestions, setAnsweredQuestions] = useState([]);
+
+          const questions = [
+            {
+              question: "In quale anno circa nacque Pietro Perugino?",
+              options: ["1420-1430", "1445-1452", "1475-1480", "1490-1500"],
+              correct: 1,
+              explanation: "Perugino nacque intorno al 1445-1452 presso Perugia."
+            },
+            {
+              question: "Sotto quale maestro studiò Perugino a Firenze?",
+              options: ["Botticelli", "Andrea Verrocchio", "Masaccio", "Donatello"],
+              correct: 1,
+              explanation: "Perugino studiò nella bottega di Andrea Verrocchio, avendo come compagno Leonardo da Vinci."
+            },
+            {
+              question: "Chi era il compagno di bottega di Perugino presso Verrocchio?",
+              options: ["Michelangelo", "Raffaello", "Leonardo da Vinci", "Tiziano"],
+              correct: 2,
+              explanation: "Leonardo da Vinci fu compagno di Perugino nella bottega del Verrocchio."
+            },
+            {
+              question: "In quale anno Perugino divenne pittore indipendente?",
+              options: ["1460", "1472", "1485", "1501"],
+              correct: 1,
+              explanation: "Dal 1472 Perugino era già pittore indipendente, conosciuto con il suo soprannome."
+            },
+            {
+              question: "Dove si trova l'affresco 'Consegna delle chiavi a San Pietro'?",
+              options: ["Galleria degli Uffizi", "Cappella Sistina", "Musei Vaticani", "Louvre"],
+              correct: 1,
+              explanation: "L'affresco si trova nella Cappella Sistina, Città del Vaticano."
+            },
+            {
+              question: "In quale anno Perugino aprì una seconda bottega a Perugia?",
+              options: ["1480", "1490", "1501", "1515"],
+              correct: 2,
+              explanation: "Nel 1501 Perugino aprì una bottega a Perugia per far fronte alle numerose commissioni."
+            },
+            {
+              question: "Qual è la tecnica utilizzata per il 'Ritratto di Francesco delle Opere'?",
+              options: ["Olio su tela", "Tempera su tavola", "Affresco", "Acquerello"],
+              correct: 1,
+              explanation: "Il ritratto è realizzato con tempera su tavola di quercia."
+            },
+            {
+              question: "Quale motto savonaroliano compare nel 'Ritratto di Francesco delle Opere'?",
+              options: ["CARPE DIEM", "TIMETE DEUM", "MEMENTO MORI", "AMOR VINCIT"],
+              correct: 1,
+              explanation: "Sul cartiglio compare 'TIMETE DEUM' (Temete Dio), motto ricorrente nelle prediche di Savonarola."
+            },
+            {
+              question: "In quante giornate di lavoro fu completata la 'Consegna delle chiavi'?",
+              options: ["28", "51", "75", "100"],
+              correct: 1,
+              explanation: "L'affresco fu completato in 51 giornate di lavoro."
+            },
+            {
+              question: "In quale anno morì Pietro Perugino?",
+              options: ["1503", "1510", "1523", "1530"],
+              correct: 2,
+              explanation: "Perugino morì presso Perugia nel 1523."
+            }
+          ];
+
+          const handleAnswer = (index) => {
+            if (selectedAnswer !== null) return;
+            
+            setSelectedAnswer(index);
+            setShowResult(true);
+            
+            if (index === questions[currentQuestion].correct) {
+              setScore(score + 1);
+            }
+
+            setAnsweredQuestions([...answeredQuestions, {
+              question: currentQuestion,
+              correct: index === questions[currentQuestion].correct
+            }]);
+          };
+
+          const nextQuestion = () => {
+            if (currentQuestion < questions.length - 1) {
+              setCurrentQuestion(currentQuestion + 1);
+              setSelectedAnswer(null);
+              setShowResult(false);
+            } else {
+              setQuizCompleted(true);
+            }
+          };
+
+          const restartQuiz = () => {
+            setCurrentQuestion(0);
+            setScore(0);
+            setSelectedAnswer(null);
+            setShowResult(false);
+            setQuizCompleted(false);
+            setAnsweredQuestions([]);
+          };
+
+          const getScoreMessage = () => {
+            const percentage = (score / questions.length) * 100;
+            if (percentage === 100) return "Perfetto! Sei un vero esperto di Perugino! 🎨";
+            if (percentage >= 80) return "Ottimo! Conosci molto bene Perugino! 🌟";
+            if (percentage >= 60) return "Bravo! Buona conoscenza di Perugino! 👍";
+            if (percentage >= 40) return "Discreto! Continua a studiare! 📚";
+            return "Devi approfondire! Riprova! 💪";
+          };
+
+          if (quizCompleted) {
+            return (
+              <div style={{
+                minHeight: '100vh',
+                background: 'linear-gradient(to bottom right, #e9d5ff, #fce7f3)',
+                padding: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{
+                  background: 'white',
+                  borderRadius: '1rem',
+                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                  padding: '2rem',
+                  maxWidth: '42rem',
+                  width: '100%'
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🏆</div>
+                    <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '1rem' }}>
+                      Quiz Completato!
+                    </h2>
+                    <div style={{ fontSize: '3.75rem', fontWeight: 'bold', color: '#9333ea', marginBottom: '1rem' }}>
+                      {score} / {questions.length}
+                    </div>
+                    <p style={{ fontSize: '1.5rem', color: '#4b5563', marginBottom: '2rem' }}>
+                      {getScoreMessage()}
+                    </p>
+                    
+                    <div style={{
+                      background: '#f9fafb',
+                      borderRadius: '0.5rem',
+                      padding: '1.5rem',
+                      marginBottom: '1.5rem'
+                    }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                        Riepilogo risposte:
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {answeredQuestions.map((answer, idx) => (
+                          <div key={idx} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.75rem',
+                            background: 'white',
+                            borderRadius: '0.5rem'
+                          }}>
+                            <span style={{ color: '#374151' }}>Domanda {idx + 1}</span>
+                            <span style={{ fontSize: '1.5rem' }}>
+                              {answer.correct ? '✅' : '❌'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={restartQuiz}
+                      style={{
+                        padding: '1rem 2rem',
+                        background: '#9333ea',
+                        color: 'white',
+                        borderRadius: '9999px',
+                        fontSize: '1.25rem',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        margin: '0 auto'
+                      }}
+                    >
+                      🔄 Ricomincia Quiz
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div style={{
+              minHeight: '100vh',
+              background: 'linear-gradient(to bottom right, #e9d5ff, #fce7f3)',
+              padding: '2rem'
+            }}>
+              <div style={{ maxWidth: '64rem', margin: '0 auto' }}>
+                <div style={{
+                  background: 'white',
+                  borderRadius: '1rem',
+                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                  padding: '2rem'
+                }}>
+                  <div style={{ marginBottom: '2rem' }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '1rem'
+                    }}>
+                      <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#1f2937' }}>
+                        Quiz su Pietro Perugino
+                      </h1>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#9333ea' }}>
+                        {score} / {questions.length}
+                      </div>
+                    </div>
+                    <div style={{
+                      width: '100%',
+                      background: '#e5e7eb',
+                      borderRadius: '9999px',
+                      height: '0.75rem'
+                    }}>
+                      <div style={{
+                        background: '#9333ea',
+                        height: '0.75rem',
+                        borderRadius: '9999px',
+                        width: `${((currentQuestion + 1) / questions.length) * 100}%`,
+                        transition: 'width 0.5s'
+                      }} />
+                    </div>
+                    <p style={{ color: '#4b5563', marginTop: '0.5rem' }}>
+                      Domanda {currentQuestion + 1} di {questions.length}
+                    </p>
+                  </div>
+
+                  <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold',
+                      color: '#1f2937',
+                      marginBottom: '1.5rem'
+                    }}>
+                      {questions[currentQuestion].question}
+                    </h2>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {questions[currentQuestion].options.map((option, index) => {
+                        let buttonStyle = {
+                          width: '100%',
+                          padding: '1rem',
+                          textAlign: 'left',
+                          borderRadius: '0.75rem',
+                          border: '2px solid',
+                          transition: 'all 0.3s',
+                          fontSize: '1.125rem',
+                          fontWeight: '500',
+                          cursor: selectedAnswer === null ? 'pointer' : 'default',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        };
+                        
+                        if (selectedAnswer === null) {
+                          buttonStyle.borderColor = '#d1d5db';
+                          buttonStyle.background = 'white';
+                        } else {
+                          if (index === questions[currentQuestion].correct) {
+                            buttonStyle.borderColor = '#22c55e';
+                            buttonStyle.background = '#f0fdf4';
+                            buttonStyle.color = '#166534';
+                          } else if (index === selectedAnswer) {
+                            buttonStyle.borderColor = '#ef4444';
+                            buttonStyle.background = '#fef2f2';
+                            buttonStyle.color = '#991b1b';
+                          } else {
+                            buttonStyle.borderColor = '#d1d5db';
+                            buttonStyle.background = '#f9fafb';
+                            buttonStyle.color = '#6b7280';
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={index}
+                            onClick={() => handleAnswer(index)}
+                            disabled={selectedAnswer !== null}
+                            style={buttonStyle}
+                            onMouseEnter={(e) => {
+                              if (selectedAnswer === null) {
+                                e.target.style.borderColor = '#a78bfa';
+                                e.target.style.background = '#f5f3ff';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (selectedAnswer === null) {
+                                e.target.style.borderColor = '#d1d5db';
+                                e.target.style.background = 'white';
+                              }
+                            }}
+                          >
+                            <span>{option}</span>
+                            {selectedAnswer !== null && index === questions[currentQuestion].correct && (
+                              <span style={{ fontSize: '1.75rem' }}>✅</span>
+                            )}
+                            {selectedAnswer === index && index !== questions[currentQuestion].correct && (
+                              <span style={{ fontSize: '1.75rem' }}>❌</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {showResult && (
+                    <div style={{
+                      padding: '1.5rem',
+                      borderRadius: '0.75rem',
+                      marginBottom: '1.5rem',
+                      border: '2px solid',
+                      borderColor: selectedAnswer === questions[currentQuestion].correct ? '#22c55e' : '#ef4444',
+                      background: selectedAnswer === questions[currentQuestion].correct ? '#f0fdf4' : '#fef2f2'
+                    }}>
+                      <p style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                        {selectedAnswer === questions[currentQuestion].correct ? '✅ Corretto!' : '❌ Sbagliato!'}
+                      </p>
+                      <p style={{ color: '#374151' }}>{questions[currentQuestion].explanation}</p>
+                    </div>
+                  )}
+
+                  {showResult && (
+                    <button
+                      onClick={nextQuestion}
+                      style={{
+                        width: '100%',
+                        padding: '1rem 1.5rem',
+                        background: '#9333ea',
+                        color: 'white',
+                        borderRadius: '0.75rem',
+                        fontSize: '1.25rem',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = '#7e22ce'}
+                      onMouseLeave={(e) => e.target.style.background = '#9333ea'}
+                    >
+                      {currentQuestion < questions.length - 1 ? 'Prossima Domanda →' : 'Vedi Risultati 🏆'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        ReactDOM.render(<PeruginoQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>
